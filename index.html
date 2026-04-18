@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no" />
+  <meta name="theme-color" content="#05070b" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Metronome" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <title>Master Metronome</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- Border Flash Overlay -->
+  <div class="border-flash" aria-hidden="true"></div>
+
+  <!-- App Shell -->
+  <div class="app-shell">
+
+    <!-- Top: title + BPM + transport -->
+    <header class="app-header">
+      <div class="brand-row">
+        <div class="brand-mark" aria-hidden="true">MM</div>
+        <h1 class="app-title">Master Metronome</h1>
+        <button id="themeToggleBtn" class="theme-toggle" aria-label="Toggle light / dark mode" aria-pressed="false" type="button">
+          <svg class="theme-icon theme-icon-moon" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+            <path d="M20.742 13.045A8.088 8.088 0 0 1 19.5 13.2a8 8 0 0 1-7.7-10.2A9 9 0 1 0 21 14.05a.98.98 0 0 0-.258-1.005Z" fill="currentColor"/>
+          </svg>
+          <svg class="theme-icon theme-icon-sun" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+            <circle cx="12" cy="12" r="4" fill="currentColor"/>
+            <g stroke="currentColor" stroke-width="2" stroke-linecap="round">
+              <line x1="12" y1="2" x2="12" y2="5"/>
+              <line x1="12" y1="19" x2="12" y2="22"/>
+              <line x1="2" y1="12" x2="5" y2="12"/>
+              <line x1="19" y1="12" x2="22" y2="12"/>
+              <line x1="4.6" y1="4.6" x2="6.7" y2="6.7"/>
+              <line x1="17.3" y1="17.3" x2="19.4" y2="19.4"/>
+              <line x1="4.6" y1="19.4" x2="6.7" y2="17.3"/>
+              <line x1="17.3" y1="6.7" x2="19.4" y2="4.6"/>
+            </g>
+          </svg>
+        </button>
+      </div>
+
+      <div class="bpm-block" aria-live="polite">
+        <span class="bpm-label">BPM</span>
+        <div class="bpm-stepper">
+          <button id="bpmMinus" class="stepper-btn" aria-label="Decrease BPM">&minus;</button>
+          <button id="bpmValueBtn" class="bpm-value-btn" aria-label="Tap to edit BPM">
+            <span id="bpmValue">120</span>
+          </button>
+          <button id="bpmPlus" class="stepper-btn" aria-label="Increase BPM">&#43;</button>
+        </div>
+      </div>
+
+      <div class="transport-row">
+        <button id="startStopBtn" class="btn-start" aria-pressed="false">
+          <span class="btn-dot" aria-hidden="true"></span>
+          <span class="btn-label">Start</span>
+        </button>
+        <button id="tapTempoBtn" class="btn-tap" aria-label="Tap tempo">
+          <span class="btn-tap-label">Tap</span>
+          <span class="btn-tap-hint">Tempo</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Middle: subdivision buttons -->
+    <main class="app-main">
+      <section class="subdivisions" aria-label="Subdivision selection">
+        <h2 class="section-title">Subdivision</h2>
+        <div class="sub-grid" role="radiogroup" aria-label="Subdivision">
+          <button class="sub-btn active" role="radio" aria-checked="true" data-sub="quarter">
+            <span class="sub-name">Quarter</span>
+            <span class="sub-hint">1 per beat</span>
+          </button>
+          <button class="sub-btn" role="radio" aria-checked="false" data-sub="eighth">
+            <span class="sub-name">Eighth</span>
+            <span class="sub-hint">2 per beat</span>
+          </button>
+          <button class="sub-btn" role="radio" aria-checked="false" data-sub="sixteenth">
+            <span class="sub-name">Sixteenth</span>
+            <span class="sub-hint">4 per beat</span>
+          </button>
+          <button class="sub-btn" role="radio" aria-checked="false" data-sub="triplet">
+            <span class="sub-name">Triplet</span>
+            <span class="sub-hint">3 per beat</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- Pulse feedback -->
+      <section class="pulse-row" aria-hidden="true">
+        <span class="pulse-dot" id="beatIndicator"></span>
+        <span class="pulse-dot secondary" id="subdivisionIndicator"></span>
+        <span class="transport-status" id="transportStatus">Stopped</span>
+      </section>
+    </main>
+
+    <!-- Bottom: optional settings + training modes -->
+    <footer class="app-footer">
+
+      <!-- Tempo & Feel -->
+      <details class="settings" open>
+        <summary><span>Tempo &amp; Feel</span></summary>
+        <div class="settings-body">
+          <div class="field-row">
+            <span class="field-label">Time Signature</span>
+            <div class="time-sig">
+              <button id="tsTopMinus" class="stepper-btn small" aria-label="Decrease beats per bar">&minus;</button>
+              <span id="timeSigTop" class="time-sig-num">4</span>
+              <button id="tsTopPlus" class="stepper-btn small" aria-label="Increase beats per bar">&#43;</button>
+              <span class="time-sig-divider">/</span>
+              <button id="tsBotMinus" class="stepper-btn small" aria-label="Decrease note value">&minus;</button>
+              <span id="timeSigBottom" class="time-sig-num">4</span>
+              <button id="tsBotPlus" class="stepper-btn small" aria-label="Increase note value">&#43;</button>
+            </div>
+          </div>
+          <div class="field-row">
+            <span class="field-label">Accent Beat 1</span>
+            <button id="accentBtn" class="pill-toggle active" aria-pressed="true">On</button>
+          </div>
+        </div>
+      </details>
+
+      <!-- Speed Trainer -->
+      <details class="settings">
+        <summary>
+          <span>Speed Trainer</span>
+          <span class="summary-status" id="speedTrainerSummary">Off</span>
+        </summary>
+        <div class="settings-body">
+          <div class="field-row">
+            <span class="field-label">Increase by (BPM)</span>
+            <div class="num-stepper">
+              <button id="speedStepMinus" class="stepper-btn small" aria-label="Decrease step">&minus;</button>
+              <span id="speedStep" class="num-stepper-val">2</span>
+              <button id="speedStepPlus" class="stepper-btn small" aria-label="Increase step">&#43;</button>
+            </div>
+          </div>
+          <div class="field-row">
+            <span class="field-label">Every (bars)</span>
+            <div class="num-stepper">
+              <button id="speedEveryMinus" class="stepper-btn small" aria-label="Decrease bars">&minus;</button>
+              <span id="speedEveryBars" class="num-stepper-val">4</span>
+              <button id="speedEveryPlus" class="stepper-btn small" aria-label="Increase bars">&#43;</button>
+            </div>
+          </div>
+          <div class="field-row">
+            <span class="field-label">Max BPM</span>
+            <div class="num-stepper">
+              <button id="speedMaxMinus" class="stepper-btn small" aria-label="Decrease max BPM">&minus;</button>
+              <span id="speedMax" class="num-stepper-val">180</span>
+              <button id="speedMaxPlus" class="stepper-btn small" aria-label="Increase max BPM">&#43;</button>
+            </div>
+          </div>
+          <div class="field-row">
+            <span class="field-label">Enable</span>
+            <button id="speedTrainerToggle" class="pill-toggle" aria-pressed="false">Off</button>
+          </div>
+          <div class="status-line" id="speedTrainerStatus">Idle</div>
+        </div>
+      </details>
+
+      <!-- Gap Click -->
+      <details class="settings">
+        <summary>
+          <span>Gap Click</span>
+          <span class="summary-status" id="gapClickSummary">Off</span>
+        </summary>
+        <div class="settings-body">
+          <div class="field-row">
+            <span class="field-label">Play bars (A)</span>
+            <div class="num-stepper">
+              <button id="gapPlayMinus" class="stepper-btn small" aria-label="Decrease play bars">&minus;</button>
+              <span id="gapPlayBars" class="num-stepper-val">4</span>
+              <button id="gapPlayPlus" class="stepper-btn small" aria-label="Increase play bars">&#43;</button>
+            </div>
+          </div>
+          <div class="field-row">
+            <span class="field-label">Mute bars (B)</span>
+            <div class="num-stepper">
+              <button id="gapMuteMinus" class="stepper-btn small" aria-label="Decrease mute bars">&minus;</button>
+              <span id="gapMuteBars" class="num-stepper-val">2</span>
+              <button id="gapMutePlus" class="stepper-btn small" aria-label="Increase mute bars">&#43;</button>
+            </div>
+          </div>
+          <div class="field-row">
+            <span class="field-label">Enable</span>
+            <button id="gapClickToggle" class="pill-toggle" aria-pressed="false">Off</button>
+          </div>
+          <div class="status-line" id="gapClickStatus">Playing always</div>
+        </div>
+      </details>
+
+    </footer>
+
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
