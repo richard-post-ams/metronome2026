@@ -130,6 +130,14 @@ button {
   min-width: 0;
 }
 
+.sugoi-logo {
+  height: 38px;
+  width: auto;
+  flex-shrink: 0;
+  margin: 0 8px 0 -4px;
+  object-fit: contain;
+}
+
 /* Theme toggle */
 .theme-toggle {
   flex-shrink: 0;
